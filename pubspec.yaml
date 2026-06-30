@@ -11,14 +11,14 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # Database
+  # Database — sqflite for mobile, shared_preferences JSON for web
   sqflite: ^2.3.2
   path: ^1.8.3
 
   # UI
   flutter_slidable: ^3.1.0
 
-  # Notifications
+  # Notifications (mobile only — web uses a stub)
   flutter_local_notifications: ^17.1.2
   timezone: ^0.9.4
 

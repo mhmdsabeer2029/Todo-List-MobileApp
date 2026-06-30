@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -6,7 +7,7 @@ import 'store/settings_store.dart';
 import 'store/task_store.dart';
 import 'store/project_store.dart';
 import 'store/auth_store.dart';
-import 'utils/notifications.dart';
+import 'utils/notification_service.dart';
 import 'app_shell.dart';
 import 'features/onboarding/onboarding_screen.dart';
 import 'features/auth/login_screen.dart';
@@ -14,15 +15,17 @@ import 'features/auth/login_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Lock to portrait
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
+  // Portrait lock only on mobile — not supported/needed on web
+  if (!kIsWeb) {
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+  }
 
-  // Initialize services
+  // Notifications are no-ops on web (stub handles gracefully)
   await NotificationService().init();
-  await NotificationService().requestPermissions();
+  if (!kIsWeb) await NotificationService().requestPermissions();
   await SettingsStore().load();
   await AuthStore().load();
 

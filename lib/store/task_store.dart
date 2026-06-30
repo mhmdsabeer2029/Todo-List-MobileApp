@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
-import '../db/database.dart';
+import '../db/app_database.dart';
 import '../models/index.dart';
-import '../utils/notifications.dart';
+import '../utils/notification_service.dart';
 
 class TaskStore extends ChangeNotifier {
   static final TaskStore _instance = TaskStore._internal();

@@ -5,7 +5,7 @@ import '../store/task_store.dart';
 import '../store/project_store.dart';
 import '../utils/nlp_parser.dart';
 import '../utils/groq_service.dart';
-import '../utils/voice_service.dart';
+import '../utils/voice_service_platform.dart';
 import '../constants/theme.dart';
 
 class QuickAddSheet extends StatefulWidget {

@@ -1,40 +1,83 @@
-# TaskFlow — Offline-First Task Manager
+<div align="center">
 
-[![Flutter](https://img.shields.io/badge/Flutter-3.16%2B-02569B?logo=flutter&logoColor=white)](https://flutter.dev)
-[![Dart](https://img.shields.io/badge/Dart-3.2%2B-0175C2?logo=dart&logoColor=white)](https://dart.dev)
-[![SQLite](https://img.shields.io/badge/SQLite-offline--first-003B57?logo=sqlite&logoColor=white)](https://sqlite.org)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](#license)
+# ✓ TodoList
 
-A production-grade, offline-first mobile task manager built from scratch in **Flutter + Dart**. Inspired by Todoist's interaction model, extended with natural-language input, an LLM-powered search/parsing layer, voice capture, and bulk import from Google Sheets — all on top of a fully local SQLite data layer with zero backend dependency.
+**An AI-powered task manager built with Flutter & Groq**
 
-~9,000 lines of Dart across 40 files, organized into a clean store/database/UI separation with `ChangeNotifier`-based state management.
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Try%20Now-4073FF?style=for-the-badge)](https://mhmdsabeer2029.github.io/Todo-List-MobileApp/)
+[![Flutter](https://img.shields.io/badge/Flutter-3.22-02569B?style=for-the-badge&logo=flutter)](https://flutter.dev)
+[![Groq](https://img.shields.io/badge/Groq-LLaMA%203.3-orange?style=for-the-badge)](https://groq.com)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+
+</div>
 
 ---
 
-## Why this exists
+## 🚀 Live Demo
 
-Most "todo app" portfolio projects are CRUD wrappers around a single table. This one isn't — it's an exercise in handling the problems that actually show up once an app has real users: filtered-list reordering that has to stay consistent with a global ordering, recurring tasks that have to survive month-end date math correctly, project/label deletion that has to cascade without orphaning data, notification scheduling that has to avoid ID collisions, and a natural-language parser that has to degrade gracefully when an external AI service isn't available.
+👉 **[mhmdsabeer2029.github.io/Todo-List-MobileApp](https://mhmdsabeer2029.github.io/Todo-List-MobileApp/)**
+
+Runs right in your browser — no install needed. Works on mobile too.
 
 ---
 
 ## ✨ Features
 
-| Category | What it does |
+| Feature | Description |
 |---|---|
-| **Natural language input** | Type `"Call Alex tomorrow at 3pm #work @calls p1"` and it's parsed into a due date, time, project, label, and priority — live preview chips show the parse as you type. |
-| **AI-powered search** | Plug in a Groq API key and search becomes semantic: `"overdue work stuff"` or `"things due this week tagged urgent"` resolve to structured filters instead of plain substring matching. Falls back to keyword search automatically if the AI call fails or no key is set. |
-| **Voice capture** | On-device speech-to-text feeds straight into the quick-add parser. |
-| **Recurring tasks** | Daily / weekly / monthly recurrence with correct calendar math — monthly recurrence clamps to the target month's actual last day instead of silently overflowing into the wrong month. |
-| **Sub-tasks & comments** | Tasks can have nested sub-tasks and a threaded comment log. |
-| **Projects & sections** | Custom emoji + color, sections within a project, progress bars, archiving, favorites. |
-| **Labels** | Custom-colored tags, filterable across every project and view. |
-| **Bulk import** | Pull tasks straight from a Google Sheet, preview them, and selectively import — including resolving/creating matching projects and labels automatically. |
-| **Smart views** | Today (overdue + due today), Inbox, Upcoming (7-day), Search, Completed, per-Project, per-Label. |
-| **Reminders & notifications** | Per-task reminders scheduled relative to due time, plus a configurable daily digest. |
-| **Stats & gamification** | Completion streaks, a karma score, and a 7-day activity chart — computed with a single aggregate query, not N sequential round-trips. |
-| **Multi-provider auth** | Google Sign-In wired end-to-end; Microsoft/Apple auth scaffolding included for extension. |
-| **Theming** | Dark / Light / System, with a full Todoist-inspired design token system. |
-| **Fully offline** | SQLite via `sqflite`. No backend, no account required to use the core app — auth is optional. |
+| 🧠 **AI Task Parsing** | Type naturally in Arabic or English — Groq extracts date, time, project, labels & priority |
+| 🔍 **AI Search** | Ask *"overdue work tasks this week"* — structured smart filtering |
+| ✨ **Subtask Suggestions** | Groq breaks any task into actionable sub-steps; you pick which to add |
+| 🛠 **AI Maintenance** | Smart suggestions for duplicate projects, stale tasks, unused labels |
+| 📅 **Today / Inbox / Upcoming** | Clean views for every context |
+| 🗂 **Projects & Labels** | Full organization system with color & emoji |
+| 🔄 **Recurring Tasks** | Daily / weekly / monthly with natural language setup |
+| 🔔 **Reminders** | Scheduled push notifications (mobile) |
+| 🌙 **Dark Mode** | Auto-follows system theme |
+| 🇪🇬 **Arabic Support** | Full RTL + Egyptian Arabic colloquial understanding |
+
+---
+
+## 📱 Screenshots
+
+> Add screenshots here after running the app
+
+---
+
+## 🛠 Setup
+
+### Prerequisites
+- Flutter 3.16+
+- A free [Groq API key](https://console.groq.com)
+
+### Run locally
+
+```bash
+git clone https://github.com/mhmdsabeer2029/Todo-List-MobileApp.git
+cd Todo-List-MobileApp
+
+# Put your Groq key in lib/utils/local_secrets.dart (already gitignored)
+echo "const String kLocalGroqApiKey = 'YOUR_KEY_HERE';" > lib/utils/local_secrets.dart
+
+flutter pub get
+flutter run
+```
+
+### Run web demo locally
+
+```bash
+flutter run -d chrome --web-renderer canvaskit \
+  --dart-define=GROQ_API_KEY=YOUR_KEY_HERE
+```
+
+### Build & deploy (automatic)
+
+Push to `main` — GitHub Actions builds and deploys automatically.
+
+First-time setup:
+1. Go to repo **Settings → Secrets → Actions** → add `GROQ_API_KEY`
+2. Go to repo **Settings → Pages** → Source: **GitHub Actions**
+3. Push anything to `main` — the workflow handles the rest
 
 ---
 
@@ -42,232 +85,37 @@ Most "todo app" portfolio projects are CRUD wrappers around a single table. This
 
 ```
 lib/
-├── main.dart                       # Entry point, app bootstrap, sign-in/onboarding gate
-├── app_shell.dart                  # Bottom nav + side drawer shell
-│
-├── constants/
-│   └── theme.dart                  # Design tokens: colors, spacing, ThemeData
-│
-├── models/
-│   └── index.dart                  # Task, Project, Label, Section, Comment, Settings
-│
 ├── db/
-│   └── database.dart               # SQLite schema, migrations, all queries (AppDatabase)
-│
-├── store/                          # ChangeNotifier-based state, one source of truth per domain
-│   ├── task_store.dart             # Tasks, recurrence engine, reordering
-│   ├── project_store.dart          # Projects + LabelStore
-│   ├── label_store.dart            # Re-exports LabelStore (see project_store.dart)
-│   ├── settings_store.dart         # SharedPreferences-backed app settings
-│   └── auth_store.dart             # Sign-in state persistence
-│
-├── utils/
-│   ├── nlp_parser.dart             # Local regex-based natural-language parser
-│   ├── groq_service.dart           # Groq LLM integration: AI search + AI task parsing
-│   ├── voice_service.dart          # Speech-to-text wrapper
-│   ├── notifications.dart          # Local push notification scheduling
-│   ├── google_auth_service.dart    # Google Sign-In flow
-│   ├── other_auth_services.dart    # Microsoft / Apple auth scaffolding
-│   ├── sheets_import_service.dart  # Google Sheets fetch + candidate parsing
-│   ├── date_utils.dart             # Date formatting helpers (AppDateUtils)
-│   ├── stats_engine.dart           # Karma / streak computation
-│   └── local_secrets.dart          # Gitignored — local-only API key (never committed)
-│
-├── widgets/
-│   ├── task_item.dart              # Swipeable task row
-│   ├── quick_add_sheet.dart        # NLP quick-add bottom sheet w/ live parse preview
-│   ├── task_detail_sheet.dart      # Full task editor (draggable sheet)
-│   ├── reschedule_sheet.dart       # Reschedule quick-picker
-│   ├── empty_state.dart            # Generic empty state
-│   └── priority_badge.dart         # P1–P4 flag chip
-│
-├── screens/
-│   ├── today_screen.dart
-│   ├── inbox_screen.dart
-│   ├── upcoming_screen.dart
-│   ├── search_screen.dart          # Plain + AI search, unified result refresh
-│   ├── settings_screen.dart
-│   └── completed_screen.dart
-│
-└── features/
-    ├── projects/                   # List, detail, create
-    ├── labels/                     # Label management
-    ├── auth/                       # Login screen
-    ├── onboarding/                 # First-run flow
-    ├── maintenance/                # Data maintenance utilities
-    └── sheets_import/              # Google Sheets bulk import flow
-```
-
-**Design principles this codebase follows:**
-
-- **Single source of truth per domain.** `TaskStore`, `ProjectStore`, and `SettingsStore` are singletons extending `ChangeNotifier`; screens listen, never duplicate state.
-- **Database is the only place that knows SQL.** `AppDatabase` is the sole owner of the `sqflite` instance and schema; stores never construct raw queries.
-- **Global invariants stay global.** Task ordering (`order_index`) is a single ordering shared across every filtered view — reordering within a filtered list redistributes that list's *existing* slots rather than overwriting them with local indices, so reordering "Today" can't silently scramble order in "Upcoming."
-- **Cascades are explicit.** Deleting a project reassigns its tasks to Inbox inside a transaction (matching what the confirmation dialog promises the user); deleting a label strips itself from every task's label set, both at the DB layer and in already-loaded in-memory state.
-- **Graceful AI degradation.** Every Groq-backed feature (search, NLP parsing) has a deterministic local fallback and never blocks core functionality if the API is unreachable or unconfigured.
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-| Tool | Version | Notes |
-|---|---|---|
-| [Flutter SDK](https://docs.flutter.dev/get-started/install) | 3.16+ | Bundles Dart 3.2+ |
-| Android Studio | latest | For Android SDK, platform tools, and an emulator |
-| JDK | 17 | Usually bundled with Android Studio's JBR |
-
-### 1. Clone and install dependencies
-
-```bash
-git clone <your-repo-url>
-cd todolist
-flutter pub get
-```
-
-### 2. (Optional) Configure the Groq API key for AI search/parsing
-
-AI features degrade gracefully if skipped — the app works fully without this step.
-
-```bash
-flutter run --dart-define=GROQ_API_KEY=your_key_here
-```
-
-Alternatively, for local development convenience, set `kLocalGroqApiKey` in `lib/utils/local_secrets.dart` (already gitignored). **Never commit a real key** — see [Security](#-security-notes) below.
-
-### 3. Run
-
-```bash
-flutter devices
-flutter run -d <device-id>
-```
-
-### 4. Build a release APK
-
-```bash
-flutter build apk --release
-```
-
-Output: `build/app/outputs/flutter-apk/app-release.apk`
-
-For Google Play distribution, build an App Bundle instead:
-
-```bash
-flutter build appbundle --release
+│   ├── database.dart          # sqflite (mobile)
+│   ├── database_web.dart      # shared_preferences JSON (web)
+│   └── app_database.dart      # conditional export (auto-picks)
+├── store/                     # ChangeNotifier state management
+├── models/                    # Task, Project, Label, Section, Comment
+├── screens/                   # Today, Inbox, Upcoming, Search, Settings
+├── widgets/                   # TaskItem, QuickAdd, TaskDetail, etc.
+├── features/                  # Auth, Projects, Labels, Maintenance
+└── utils/
+    ├── groq_service.dart       # All Groq AI calls (task parse, search, subtasks, maintenance)
+    ├── nlp_parser.dart         # Local fallback NLP (no network needed)
+    ├── notification_service.dart  # Conditional: real on mobile, stub on web
+    └── voice_service_platform.dart # Conditional: real on mobile, stub on web
 ```
 
 ---
 
-## 🗄 Database
+## 🤖 Groq Integration
 
-SQLite via `sqflite`, created automatically on first launch.
+All AI features go through `GroqService` with retry + exponential backoff:
 
-**Tables:** `tasks`, `projects`, `labels`, `task_labels`, `sections`, `comments`
+- **`parseTaskIntent(input, {projects, labels})`** — NL→structured task, context-aware (reuses existing project/label names)
+- **`parseSearchQuery(query, {projects, labels})`** — NL→filters (project, label, priority, time window, overdue)
+- **`suggestSubtasks({title, description})`** — returns 3-5 subtask suggestions
+- **`getMaintenanceSuggestions({projects, labels, staleTasks})`** — advisory hygiene report
 
-An `Inbox` project (`id = 'inbox'`) is seeded on first run and can never be deleted — every task that loses its parent project (e.g. via project deletion) is reassigned here, never silently orphaned.
-
----
-
-## 🧠 Natural Language Parsing
-
-Two layers, used depending on configuration:
-
-**Local parser** (`nlp_parser.dart`) — always available, zero network dependency, regex-based:
-
-| Input | Parsed as |
-|---|---|
-| `Call Alex tomorrow at 3pm` | dueDate: tomorrow, dueTime: 15:00 |
-| `Buy groceries #shopping @errands` | project: shopping, label: errands |
-| `Finish report p1 !!!` | priority: 1 |
-| `Team standup every week` | recurring: WEEKLY;INTERVAL=1 |
-| `Submit proposal next Monday` | dueDate: next Monday |
-| `Fix bug in 2 hours` | dueTime: now + 2h |
-| `Remind me 30 minutes before` | reminderMinutes: 30 |
-
-**AI parser** (`groq_service.dart`) — used for AI search queries and richer task parsing when a Groq key is configured; handles loose, conversational phrasing the regex parser can't.
+Model: `llama-3.3-70b-versatile` · Falls back gracefully to local NLP if Groq is unavailable.
 
 ---
 
-## 🔔 Notifications
+## 📄 License
 
-- Per-task reminders scheduled at `dueDate/dueTime − reminderMinutes`.
-- Configurable daily digest (default 9:00 AM).
-- Notification IDs are derived from a 32-bit hash of the task UUID, keeping collision risk between unrelated tasks' reminders negligible.
-- Reminders automatically reschedule when a task's due date/time changes, and cancel when the task is deleted or completed.
-
----
-
-## 🎨 Design System
-
-| Token | Value |
-|---|---|
-| Primary | `#DC4C3E` |
-| Dark BG / Surface | `#1F1F1F` / `#282828` |
-| Light BG / Surface | `#FAFAFA` / `#FFFFFF` |
-| P1 / P2 / P3 / P4 | `#D1453B` / `#EB8909` / `#4073FF` / `#8C8C8C` |
-| Success | `#058527` |
-
----
-
-## 📦 Key Dependencies
-
-| Package | Purpose |
-|---|---|
-| `sqflite` | Local SQLite database |
-| `shared_preferences` | Settings & auth-state persistence |
-| `flutter_local_notifications` + `timezone` | Scheduled, timezone-aware reminders |
-| `flutter_slidable` | Swipe-to-act task rows |
-| `fl_chart` | Stats activity chart |
-| `speech_to_text` | Voice-to-text capture |
-| `google_sign_in` | Google authentication |
-| `http` | Groq API + Sheets API calls |
-| `uuid` | Stable entity IDs |
-| `intl` | Date/time formatting |
-| `permission_handler` | Runtime permission requests (mic, notifications) |
-| `url_launcher` | OAuth flow handoff |
-
----
-
-## 🔒 Security Notes
-
-- `lib/utils/local_secrets.dart` is gitignored and must **never** contain a real API key in any file you intend to zip, back up, or share — gitignore only stops `git add`, it does nothing to stop the file going out in an archive.
-- Production builds should inject secrets via `--dart-define`, not hardcoded constants.
-- Release signing keystores (`*.jks`, `*.keystore`) and `android/key.properties` are gitignored — set those up locally per the [Android signing docs](https://docs.flutter.dev/deployment/android#signing-the-app).
-
----
-
-## 🧪 Testing
-
-```bash
-flutter test
-flutter analyze
-```
-
----
-
-## 🔧 Troubleshooting
-
-| Issue | Fix |
-|---|---|
-| `MissingPluginException` for sqflite | This is a mobile-only app — run on an Android emulator/device, not desktop. |
-| Notifications silent on Android 12+ | Grant `SCHEDULE_EXACT_ALARM` under device Settings → Apps → TaskFlow → Permissions. |
-| `pub get` fails | Confirm `flutter --version` reports 3.16+. |
-| AI search always falls back to keyword search | Confirm a Groq key was passed via `--dart-define=GROQ_API_KEY=...` at run/build time. |
-
----
-
-## 📋 Roadmap
-
-- [ ] Cloud sync (Firebase / Supabase) for cross-device state
-- [ ] Shared/collaborative projects
-- [ ] Calendar integration
-- [ ] iOS App Store release build
-- [ ] Home-screen widget
-- [ ] Apple/Microsoft sign-in completion (scaffolding already in place)
-
----
-
-## License
-
-MIT © 2026 Mohamed Saber — free to use, modify, and distribute. See [LICENSE](./LICENSE) for full terms.
+MIT © [Mohammed Sabeer](https://github.com/mhmdsabeer2029)

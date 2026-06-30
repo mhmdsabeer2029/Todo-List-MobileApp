@@ -1,4 +1,4 @@
-import '../db/database.dart';
+import '../db/app_database.dart';
 import '../models/index.dart';
 
 /// Centralised stats / karma engine

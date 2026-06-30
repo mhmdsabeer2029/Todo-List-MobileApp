@@ -6,7 +6,7 @@ import '../../widgets/task_item.dart';
 import '../../widgets/quick_add_sheet.dart';
 import '../../widgets/task_detail_sheet.dart';
 import '../../constants/theme.dart';
-import '../../db/database.dart';
+import '../../db/app_database.dart';
 import 'package:uuid/uuid.dart';
 
 class ProjectScreen extends StatefulWidget {
