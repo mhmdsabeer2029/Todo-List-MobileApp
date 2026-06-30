@@ -164,7 +164,7 @@ class _TaskDetailSheetState extends State<TaskDetailSheet> {
 
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: (didPop, result) async {
+      onPopInvoked: (didPop) async {
         if (didPop) return;
         await _flushPendingEdits();
         if (mounted) Navigator.of(context).pop();

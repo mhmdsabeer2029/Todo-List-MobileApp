@@ -50,7 +50,7 @@ ThemeData buildDarkTheme() {
       elevation: 0,
       centerTitle: false,
     ),
-    cardTheme: const CardThemeData(
+    cardTheme: const CardTheme.raw(
       color: kDarkSurface,
       elevation: 0,
       margin: EdgeInsets.zero,
@@ -83,7 +83,7 @@ ThemeData buildDarkTheme() {
     navigationBarTheme: const NavigationBarThemeData(
       backgroundColor: kDarkSurface,
       indicatorColor: Color(0x33DC4C3E),
-      labelTextStyle: WidgetStatePropertyAll(
+      labelTextStyle: MaterialStatePropertyAll(
         TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
       ),
     ),
@@ -119,7 +119,7 @@ ThemeData buildLightTheme() {
       elevation: 0,
       centerTitle: false,
     ),
-    cardTheme: const CardThemeData(
+    cardTheme: const CardTheme.raw(
       color: kLightSurface,
       elevation: 0,
       margin: EdgeInsets.zero,
@@ -152,7 +152,7 @@ ThemeData buildLightTheme() {
     navigationBarTheme: const NavigationBarThemeData(
       backgroundColor: kLightSurface,
       indicatorColor: Color(0x22DC4C3E),
-      labelTextStyle: WidgetStatePropertyAll(
+      labelTextStyle: MaterialStatePropertyAll(
         TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
       ),
     ),
