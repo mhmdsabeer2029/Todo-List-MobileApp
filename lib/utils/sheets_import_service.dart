@@ -164,7 +164,8 @@ If there are no actionable tasks in this grid, return [].
 
     final decoded = jsonDecode(response.body) as Map<String, dynamic>;
     final choices = decoded['choices'] as List<dynamic>?;
-    final content = (choices?.isNotEmpty == true ? choices!.first['message']?['content'] : null);
+    final firstChoice = (choices != null && choices.isNotEmpty) ? choices.first : null;
+    final content = firstChoice != null ? firstChoice['message']?['content'] : null;
     final text = content?.toString() ?? '[]';
     final jsonArray = _extractJsonArray(text);
 
