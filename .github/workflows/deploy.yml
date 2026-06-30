@@ -26,7 +26,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.22.3"
+          flutter-version: "3.24.5"
           channel: 'stable'
           cache: true
 
@@ -45,7 +45,7 @@ jobs:
             --release \
             --web-renderer canvaskit \
             --dart-define=GROQ_API_KEY=${{ secrets.GROQ_API_KEY }} \
-            --base-href "/Todo-List-MobileApp/"
+            --base-href "/${{ github.event.repository.name }}/"
         # Note: base-href must match your repo name exactly.
         # If your repo is at github.com/user/Todo-List-MobileApp
         # then base-href = /Todo-List-MobileApp/

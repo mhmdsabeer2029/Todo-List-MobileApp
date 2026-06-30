@@ -6,6 +6,7 @@ import 'constants/theme.dart';
 import 'store/settings_store.dart';
 import 'store/task_store.dart';
 import 'store/project_store.dart';
+import 'store/label_store.dart';
 import 'store/auth_store.dart';
 import 'utils/notification_service.dart';
 import 'app_shell.dart';
