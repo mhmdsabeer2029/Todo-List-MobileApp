@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="assets/images/app_icon.png" width="305" height="300" alt="TodoList App Icon" />
-
 # TodoList ✓
 
 **An AI-powered, offline-first task manager built with Flutter**  
