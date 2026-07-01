@@ -3,15 +3,13 @@ name: Build & Deploy Web Demo
 on:
   push:
     branches: [main, master]
-  workflow_dispatch:   # allows manual trigger from GitHub Actions tab
+  workflow_dispatch:
 
-# Allow deploying to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Only one deploy at a time
 concurrency:
   group: "pages"
   cancel-in-progress: true
@@ -43,12 +41,12 @@ jobs:
         run: |
           flutter build web \
             --release \
-            --web-renderer canvaskit \
+            --web-renderer html \
             --dart-define=GROQ_API_KEY=${{ secrets.GROQ_API_KEY }} \
-            --base-href "/${{ github.event.repository.name }}/"
-        # Note: base-href must match your repo name exactly.
-        # If your repo is at github.com/user/Todo-List-MobileApp
-        # then base-href = /Todo-List-MobileApp/
+            --base-href "/${{ github.event.repository.name }}/" \
+            --pwa-strategy=none
+        # --web-renderer html: no 8MB CanvasKit WASM, loads almost instantly
+        # --pwa-strategy=none: skip service worker, no delay on first visit
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
