@@ -1,36 +1,22 @@
 {
-  "name": "TodoList — AI Task Manager",
+  "name": "TodoList",
   "short_name": "TodoList",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#121212",
   "theme_color": "#4073FF",
-  "description": "AI-powered offline-first task manager. Arabic & English, Groq LLaMA 3.3.",
+  "description": "AI-powered task manager — Flutter + Groq",
   "orientation": "portrait-primary",
   "icons": [
     {
       "src": "icons/Icon-192.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
+      "type": "image/png"
     },
     {
       "src": "icons/Icon-512.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icons/Icon-maskable-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "icons/Icon-maskable-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
+      "type": "image/png"
     }
   ]
 }
