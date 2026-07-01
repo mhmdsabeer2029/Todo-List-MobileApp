@@ -1,78 +1,123 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <base href="$FLUTTER_BASE_HREF" />
     <meta charset="UTF-8" />
     <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
-    <meta name="description" content="TodoList — AI-powered task manager" />
+    <meta name="description" content="TodoList — AI-powered task manager. Natural language input in Arabic & English, powered by Groq LLaMA 3.3." />
+
+    <!-- PWA / iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="TodoList" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
-    />
-    <title>TodoList — AI Task Manager Demo</title>
+    <meta name="theme-color" content="#121212" />
+
+    <!-- Viewport: never zoom on mobile, fill the screen -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title>TodoList — AI Task Manager</title>
+
+    <!-- Web App Manifest -->
     <link rel="manifest" href="manifest.json" />
-    <link rel="icon" type="image/png" href="favicon.png" />
-    <!-- Preload the Flutter main bundle for faster boot -->
+
+    <!-- Tab / browser icons (multi-size so every browser picks the best) -->
+    <link rel="icon"             type="image/png" sizes="96x96"  href="icons/favicon-96.png" />
+    <link rel="icon"             type="image/png" sizes="48x48"  href="icons/favicon-48.png" />
+    <link rel="icon"             type="image/png" sizes="32x32"  href="favicon.png" />
+    <link rel="icon"             type="image/png" sizes="16x16"  href="icons/favicon-16.png" />
+    <link rel="apple-touch-icon" type="image/png" sizes="192x192" href="icons/Icon-192.png" />
+
+    <!-- Eagerly fetch the Flutter bootstrap so it starts before HTML finishes parsing -->
+    <link rel="preload" href="flutter_bootstrap.js" as="script" fetchpriority="high" />
 
     <style>
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
+      /* ── Reset ─────────────────────────────────────────────────────────── */
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-      html,
-      body {
+      /* ── Root ──────────────────────────────────────────────────────────── */
+      html, body {
         width: 100%;
         height: 100%;
-        background: #0d0d0d;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        /* overflow hidden on desktop — JS scale keeps everything in view.
+           On real phones the media query overrides this. */
         overflow: hidden;
+        background: #0a0a0a;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* ── Scene: centers the phone + info panel, scales to always fit ─── */
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       .scene {
         display: flex;
         align-items: center;
-        justify-content: center;
-        width: 100%;
-        height: 100%;
         gap: 52px;
-        transform: translateX(20px);
+        /* transform-origin stays center; JS sets transform: scale() */
+        transform-origin: center center;
+        /* will-change so the GPU layer is ready before the first frame */
+        will-change: transform;
       }
 
-      /* ── iPhone frame ─────────────────────────────────────────────────── */
-      .phone-shell {
+      /* ══════════════════════════════════════════════════════════════════════
+         PHONE SHELL  –  iPhone 16 Pro proportions (320 × 693)
+         Real iPhone 16 Pro logical size: 393 × 852. Scale ≈ 81 %.
+      ══════════════════════════════════════════════════════════════════════ */
+      .phone-wrap {
         position: relative;
-        width: 350px;
-        height: 630px;
-        border-radius: 48px;
-        background: #1c1c1e;
-        box-shadow:
-          0 0 0 1px #444,
-          0 0 0 4px #111,
-          0 30px 80px rgba(0, 0, 0, 0.85);
+        width: 320px;
+        height: 693px;
         flex-shrink: 0;
       }
 
-      .phone-screen {
+      /* Outer titanium bezel — paints chrome, no overflow clipping */
+      .phone-bezel {
         position: absolute;
-        inset: 8px;
-        border-radius: 41px;
-        background: #121212;
-        overflow: hidden;
+        inset: 0;
+        border-radius: 50px;
+        background: linear-gradient(155deg, #3a3a3a 0%, #1e1e1e 45%, #141414 100%);
+        box-shadow:
+          /* fine outer highlight */
+          0 0 0 1px #555,
+          /* titanium ring */
+          0 0 0 3px #1a1a1a,
+          0 0 0 4.5px #404040,
+          0 0 0 5.5px #111,
+          /* depth */
+          0 36px 90px rgba(0,0,0,0.88),
+          0 10px 28px rgba(0,0,0,0.55),
+          /* inner screen gloss */
+          inset 0 0 0 1px rgba(255,255,255,0.04);
+        pointer-events: none;
+        z-index: 20;
       }
 
+      /* Screen glass — this is what clips the Flutter canvas correctly.
+         Flutter renders a <canvas> which ignores CSS border-radius,
+         but clipping the *parent* with overflow:hidden works perfectly. */
+      .phone-screen {
+        position: absolute;
+        top: 6px; left: 6px; right: 6px; bottom: 6px;
+        border-radius: 44px;
+        overflow: hidden;          /* ← the only place that clips Flutter */
+        background: #000;
+        z-index: 1;
+      }
+
+      /* Flutter mounts here. No border-radius needed — .phone-screen clips it. */
       #flutter-target {
         position: absolute;
         inset: 0;
-        border-radius: 41px;
-        overflow: hidden;
+        /* Push content below the Dynamic Island safe area (10px top + 30px DI + 8px gap) */
+        /* We do NOT push the canvas itself — we let Flutter handle its own layout.
+           The DI overlay sits on top at z-index 15, covering the status bar area. */
       }
 
-      /* Loading splash shown while Flutter boots — hidden once app renders */
+      /* ── Splash screen (visible while Flutter engine loads) ─────────── */
       #splash {
         position: absolute;
         inset: 0;
@@ -81,14 +126,15 @@
         align-items: center;
         justify-content: center;
         background: #121212;
-        z-index: 50;
+        /* Must be above Flutter canvas but below DI overlay */
+        z-index: 10;
         gap: 14px;
-        border-radius: 41px;
-        transition: opacity 0.3s ease;
+        /* Smooth fade-out when Flutter is ready */
+        transition: opacity 0.4s ease;
+        pointer-events: none;
       }
       #splash.hidden {
         opacity: 0;
-        pointer-events: none;
       }
       #splash-icon {
         font-size: 28px;
@@ -99,7 +145,7 @@
         font-size: 13px;
         color: #fff;
         font-weight: 600;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.6px;
       }
       #splash-bar {
         width: 36px;
@@ -108,81 +154,121 @@
         border-radius: 2px;
         animation: pulse 1s ease-in-out infinite alternate;
       }
+      #splash-error {
+        display: none;
+        font-size: 11px;
+        color: #ff5555;
+        text-align: center;
+        padding: 0 24px;
+        line-height: 1.5;
+      }
       @keyframes pulse {
-        from {
-          transform: scaleX(0.3);
-        }
-        to {
-          transform: scaleX(1);
-        }
+        from { transform: scaleX(0.3); opacity: 0.5; }
+        to   { transform: scaleX(1);   opacity: 1;   }
       }
 
+      /* ── Dynamic Island ──────────────────────────────────────────────────
+         Overlays on top of the Flutter canvas (z-index 15 > flutter z-index).
+         This creates the real cutout illusion — Flutter content scrolls
+         behind it naturally. Position is inside .phone-screen coords.      */
       .dynamic-island {
         position: absolute;
         top: 10px;
         left: 50%;
         transform: translateX(-50%);
-        width: 80px;
-        height: 28px;
+        width: 104px;
+        height: 30px;
         background: #000;
-        border-radius: 14px;
-        z-index: 100;
+        border-radius: 20px;
+        z-index: 15;
         pointer-events: none;
+        box-shadow: inset 0 1px 4px rgba(255,255,255,0.05);
+      }
+      /* Camera lens dot inside the Dynamic Island */
+      .dynamic-island::after {
+        content: '';
+        position: absolute;
+        right: 17px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 9px;
+        height: 9px;
+        background: #0c0c0c;
+        border-radius: 50%;
+        box-shadow:
+          0 0 0 1.5px #1c1c1c,
+          inset 0 0 3px rgba(80,140,255,0.15);
       }
 
+      /* ── Home indicator bar ─────────────────────────────────────────── */
       .home-bar {
         position: absolute;
-        bottom: 6px;
+        bottom: 8px;
         left: 50%;
         transform: translateX(-50%);
-        width: 80px;
+        width: 90px;
         height: 4px;
-        background: rgba(255, 255, 255, 0.28);
-        border-radius: 2px;
-        z-index: 100;
+        background: rgba(255,255,255,0.25);
+        border-radius: 3px;
+        z-index: 15;
         pointer-events: none;
       }
 
+      /* ── Hardware side buttons ──────────────────────────────────────── */
+      .btn-action,
       .btn-vol-up,
       .btn-vol-down,
       .btn-power {
         position: absolute;
-        background: #2e2e2e;
         border-radius: 2px;
+        z-index: 25;
       }
+      /* Action button (iPhone 16 feature, top-left) */
+      .btn-action {
+        left: -4px; top: 88px;
+        width: 4px; height: 22px;
+        background: linear-gradient(to right, #1c1c1c, #383838);
+        border-radius: 3px 0 0 3px;
+      }
+      /* Volume up */
       .btn-vol-up {
-        left: -3px;
-        top: 120px;
-        width: 3px;
-        height: 28px;
+        left: -4px; top: 122px;
+        width: 4px; height: 34px;
+        background: linear-gradient(to right, #1c1c1c, #383838);
+        border-radius: 3px 0 0 3px;
       }
+      /* Volume down */
       .btn-vol-down {
-        left: -3px;
-        top: 160px;
-        width: 3px;
-        height: 28px;
+        left: -4px; top: 168px;
+        width: 4px; height: 34px;
+        background: linear-gradient(to right, #1c1c1c, #383838);
+        border-radius: 3px 0 0 3px;
       }
+      /* Power / sleep */
       .btn-power {
-        right: -3px;
-        top: 136px;
-        width: 3px;
-        height: 50px;
+        right: -4px; top: 142px;
+        width: 4px; height: 60px;
+        background: linear-gradient(to left, #1c1c1c, #383838);
+        border-radius: 0 3px 3px 0;
       }
 
-      /* ── Info panel ───────────────────────────────────────────────────── */
+      /* ══════════════════════════════════════════════════════════════════════
+         INFO PANEL  –  right side of the phone
+      ══════════════════════════════════════════════════════════════════════ */
       .info-panel {
-        max-width: 300px;
+        max-width: 295px;
         color: #fff;
       }
       .info-panel h1 {
-        font-size: 25px;
+        font-size: 26px;
         font-weight: 700;
+        letter-spacing: -0.4px;
         margin-bottom: 8px;
       }
       .tagline {
-        color: #888;
+        color: #777;
         font-size: 13px;
-        line-height: 1.65;
+        line-height: 1.7;
         margin-bottom: 22px;
       }
       .feature {
@@ -192,22 +278,23 @@
         margin-bottom: 14px;
       }
       .feature-icon {
-        font-size: 17px;
+        font-size: 18px;
         flex-shrink: 0;
-        margin-top: 2px;
+        margin-top: 1px;
+        line-height: 1;
       }
       .feature-text strong {
         display: block;
         font-size: 13px;
         font-weight: 600;
         margin-bottom: 2px;
+        color: #eee;
       }
       .feature-text span {
         font-size: 12px;
-        color: #666;
-        line-height: 1.5;
+        color: #5a5a5a;
+        line-height: 1.55;
       }
-
       .badges {
         display: flex;
         gap: 7px;
@@ -215,141 +302,175 @@
         flex-wrap: wrap;
       }
       .badge {
-        padding: 5px 11px;
+        padding: 5px 12px;
         border-radius: 20px;
         font-size: 11px;
         font-weight: 600;
-        background: #1e1e1e;
-        border: 1px solid #333;
-        color: #aaa;
+        background: #161616;
+        border: 1px solid #2a2a2a;
+        color: #777;
       }
-      .badge.blue {
-        border-color: #4073ff55;
-        color: #5585ff;
-        background: #4073ff0f;
-      }
+      .badge.blue  { border-color: #4073ff44; color: #5585ff; background: #4073ff0d; }
+      .badge.green { border-color: #3fb95044; color: #3fb950; background: #3fb9500d; }
 
-      /* ── Real mobile: full screen, no shell ──────────────────────────── */
+      /* ══════════════════════════════════════════════════════════════════════
+         REAL MOBILE PHONES  –  full screen, no shell chrome
+      ══════════════════════════════════════════════════════════════════════ */
       @media (max-width: 700px) {
-        html,
-        body {
-          background: #000;
+        html, body {
           overflow: auto;
-        }
-        .scene {
-          transform: none;
-          gap: 0;
-          align-items: flex-start;
-        }
-        .phone-shell {
-          width: 100vw;
+          background: #000;
           height: 100dvh;
-          border-radius: 0;
-          box-shadow: none;
         }
+        body { display: block; }
+        .scene { transform: none !important; gap: 0; }
+        .phone-wrap { width: 100vw; height: 100dvh; }
+        .phone-bezel { display: none; }
         .phone-screen {
-          inset: 0;
+          top: 0; left: 0; right: 0; bottom: 0;
           border-radius: 0;
         }
-        #flutter-target {
-          border-radius: 0;
-        }
-        #splash {
-          border-radius: 0;
-        }
-        .dynamic-island,
-        .home-bar,
-        .btn-vol-up,
-        .btn-vol-down,
-        .btn-power {
-          display: none;
-        }
-        .info-panel {
-          display: none;
-        }
+        .btn-action, .btn-vol-up, .btn-vol-down, .btn-power,
+        .dynamic-island, .home-bar { display: none; }
+        .info-panel { display: none; }
       }
     </style>
   </head>
+
   <body>
-    <div class="scene">
-      <div class="phone-shell">
+    <div class="scene" id="scene">
+
+      <!-- ── Phone shell ─────────────────────────────────────────────── -->
+      <div class="phone-wrap">
+
+        <!-- Titanium bezel (visual only, no clipping) -->
+        <div class="phone-bezel"></div>
+
+        <!-- Hardware buttons -->
+        <div class="btn-action"></div>
         <div class="btn-vol-up"></div>
         <div class="btn-vol-down"></div>
         <div class="btn-power"></div>
 
+        <!-- Screen glass — clips Flutter canvas via overflow:hidden -->
         <div class="phone-screen">
-          <!-- Flutter app mounts here -->
+
+          <!-- Flutter mounts here -->
           <div id="flutter-target"></div>
 
-          <!-- Splash shown while Flutter boots, fades out automatically -->
+          <!-- Splash: visible while Flutter engine initialises -->
           <div id="splash">
             <div id="splash-icon">&#10003;</div>
             <div id="splash-label">TodoList</div>
             <div id="splash-bar"></div>
+            <div id="splash-error">Failed to load.<br>Please refresh the page.</div>
           </div>
 
+          <!-- Dynamic Island — overlays on top of Flutter canvas -->
           <div class="dynamic-island"></div>
-          <div class="home-bar"></div>
-        </div>
-      </div>
 
+          <!-- Home indicator -->
+          <div class="home-bar"></div>
+
+        </div><!-- /phone-screen -->
+      </div><!-- /phone-wrap -->
+
+      <!-- ── Info panel ──────────────────────────────────────────────── -->
       <div class="info-panel">
         <h1>TodoList &#10003;</h1>
         <p class="tagline">
           An AI-powered task manager built with Flutter &amp; Groq &mdash;
-          supports Arabic and English, natural language input, and smart search.
+          supports Arabic &amp; English, natural language input, and smart search.
         </p>
 
         <div class="feature">
           <div class="feature-icon">&#129504;</div>
           <div class="feature-text">
             <strong>Groq AI Parsing</strong>
-            <span
-              >Type tasks naturally in Arabic or English &mdash; AI extracts
-              date, priority, project &amp; labels.</span
-            >
+            <span>Type tasks naturally in Arabic or English &mdash; AI extracts
+              date, priority, project &amp; labels automatically.</span>
           </div>
         </div>
         <div class="feature">
           <div class="feature-icon">&#128269;</div>
           <div class="feature-text">
             <strong>AI-Powered Search</strong>
-            <span
-              >Ask "overdue work tasks this week" and get smart filtered
-              results.</span
-            >
+            <span>Ask &ldquo;overdue work tasks this week&rdquo; and get smart
+              filtered results instantly.</span>
           </div>
         </div>
         <div class="feature">
           <div class="feature-icon">&#10024;</div>
           <div class="feature-text">
             <strong>Subtask Suggestions</strong>
-            <span
-              >Groq breaks any task into actionable sub-steps for you to accept
-              or reject.</span
-            >
+            <span>Groq breaks any task into actionable sub-steps for you to
+              accept or reject.</span>
           </div>
         </div>
         <div class="feature">
           <div class="feature-icon">&#128296;</div>
           <div class="feature-text">
             <strong>AI Maintenance</strong>
-            <span
-              >Smart suggestions for duplicate projects, stale tasks, and
-              cleanup opportunities.</span
-            >
+            <span>Smart suggestions for duplicate projects, stale tasks, and
+              cleanup opportunities.</span>
           </div>
         </div>
 
         <div class="badges">
           <span class="badge blue">Flutter</span>
-          <span class="badge blue">Groq LLaMA 3.3</span>
+          <span class="badge blue">Groq LLaMA&nbsp;3.3</span>
           <span class="badge">Arabic + English</span>
-          <span class="badge">Open Source</span>
+          <span class="badge green">Open Source</span>
         </div>
-      </div>
-    </div>
+      </div><!-- /info-panel -->
 
+    </div><!-- /scene -->
+
+    <script>
+      // ── Scale scene to always fit viewport without scrolling (desktop) ──
+      // Measures the scene's natural rendered size then applies a uniform
+      // CSS scale so both the phone and info panel are always fully visible.
+      (function () {
+        var scene = document.getElementById('scene');
+        if (!scene) return;
+
+        function fit() {
+          if (window.innerWidth <= 700) {
+            scene.style.transform = '';
+            return;
+          }
+          // Reset scale first so scrollWidth/Height reflect natural size
+          scene.style.transform = 'scale(1)';
+          var W = scene.scrollWidth;
+          var H = scene.scrollHeight;
+          var pad = 44; // px breathing room on each side
+          var sx = (window.innerWidth  - pad * 2) / W;
+          var sy = (window.innerHeight - pad * 2) / H;
+          var s  = Math.min(sx, sy, 1); // never upscale past 1×
+          scene.style.transform = 'scale(' + s + ')';
+        }
+
+        // First fit after layout is painted
+        requestAnimationFrame(function () {
+          requestAnimationFrame(fit); // double-rAF ensures layout is stable
+        });
+        window.addEventListener('resize', fit, { passive: true });
+      })();
+
+      // ── Flutter load error handler ──────────────────────────────────────
+      // If the engine fails (404 on main.dart.js, etc.) show an error
+      // message instead of an infinite spinner.
+      window.addEventListener('error', function (e) {
+        if (e.filename && e.filename.indexOf('main.dart') !== -1) {
+          var bar   = document.getElementById('splash-bar');
+          var error = document.getElementById('splash-error');
+          if (bar)   bar.style.display   = 'none';
+          if (error) error.style.display = 'block';
+        }
+      });
+    </script>
+
+    <!-- Bootstrap Flutter (async so it doesn't block HTML parsing) -->
     <script src="flutter_bootstrap.js" async></script>
   </body>
 </html>
