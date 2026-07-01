@@ -39,7 +39,7 @@ The app is **offline-first**: all data lives on your device (SQLite on mobile, S
 
 The core superpower of the app. Type or speak naturally and the AI extracts every task attribute automatically.
 
-- **Egyptian Arabic colloquial understanding** — phrases like `"عايز أعمل meeting بكره الساعة 3 #شغل p1"` are fully parsed
+- **Egyptian Arabic colloquial understanding** — phrases like `"انا عندي ميتينج الساعة 4 العصر #p1"` are fully parsed
 - **Automatic attribute extraction** — title, due date, due time, project, labels, priority, recurrence, and reminder minutes are all detected from free-form text
 - **Context-aware project/label matching** — the AI matches against your _existing_ project and label names instead of inventing new ones
 - **Bilingual** — seamlessly switches between Arabic and English mid-sentence
