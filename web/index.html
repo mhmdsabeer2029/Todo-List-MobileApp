@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <base href="$FLUTTER_BASE_HREF">
   <meta charset="UTF-8">
@@ -9,61 +9,68 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="TodoList">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>TodoList — AI Task Manager Demo</title>
+  <title>TodoList — AI Task Manager</title>
   <link rel="manifest" href="manifest.json">
 
-  <!-- Preload the Flutter main bundle for faster boot -->
-
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     html, body {
-      width: 100%; height: 100%;
-      background: #0d0d0d;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      width: 100%;
+      height: 100%;
+      background: #0a0a0a;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
       overflow: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
+    /* ── Scene layout ─────────────────────────────────────────────────── */
     .scene {
       display: flex;
       align-items: center;
       justify-content: center;
       width: 100%;
       height: 100%;
-      gap: 52px;
-      transform: translateX(20px);
+      gap: 56px;
     }
 
-    /* ── iPhone frame ─────────────────────────────────────────────────── */
+    /* ── iPhone shell — wider (340px), NO dynamic island, NO home bar ── */
     .phone-shell {
       position: relative;
-      width: 285px;
+      width: 349px;
       height: 615px;
-      border-radius: 48px;
+      border-radius: 52px;
       background: #1c1c1e;
       box-shadow:
-        0 0 0 1px #444,
-        0 0 0 4px #111,
-        0 30px 80px rgba(0,0,0,0.85);
+        0 0 0 1.5px #555,
+        0 0 0 5px #111,
+        0 40px 100px rgba(0,0,0,0.9);
       flex-shrink: 0;
     }
 
+    /* Physical side buttons */
+    .btn-vol-up   { position: absolute; left: -4px; top: 130px; width: 4px; height: 32px; background: #2a2a2a; border-radius: 2px 0 0 2px; }
+    .btn-vol-down { position: absolute; left: -4px; top: 176px; width: 4px; height: 32px; background: #2a2a2a; border-radius: 2px 0 0 2px; }
+    .btn-power    { position: absolute; right: -4px; top: 152px; width: 4px; height: 58px; background: #2a2a2a; border-radius: 0 2px 2px 0; }
+
+    /* Inner screen — clean, no notch cutout, no home indicator */
     .phone-screen {
       position: absolute;
-      inset: 8px;
-      border-radius: 41px;
-      background: #121212;
+      inset: 10px;
+      border-radius: 43px;
+      background: #1f1f1f;
       overflow: hidden;
     }
 
+    /* Flutter mounts here */
     #flutter-target {
       position: absolute;
       inset: 0;
-      border-radius: 41px;
+      border-radius: 43px;
       overflow: hidden;
     }
 
-    /* Loading splash shown while Flutter boots — hidden once app renders */
+    /* Splash while Flutter boots */
     #splash {
       position: absolute;
       inset: 0;
@@ -71,105 +78,93 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: #121212;
+      background: #1f1f1f;
       z-index: 50;
       gap: 14px;
-      border-radius: 41px;
-      transition: opacity 0.3s ease;
+      border-radius: 43px;
+      transition: opacity 0.4s ease;
     }
     #splash.hidden { opacity: 0; pointer-events: none; }
-    #splash-icon { font-size: 28px; color: #fff; font-weight: 700; }
-    #splash-label { font-size: 13px; color: #fff; font-weight: 600; letter-spacing: 0.5px; }
+    #splash-icon  { font-size: 32px; color: #DC4C3E; font-weight: 800; }
+    #splash-label { font-size: 14px; color: #fff; font-weight: 600; letter-spacing: 0.4px; }
     #splash-bar {
-      width: 36px; height: 3px;
-      background: #4073FF;
+      width: 40px; height: 3px;
+      background: #DC4C3E;
       border-radius: 2px;
-      animation: pulse 1s ease-in-out infinite alternate;
+      animation: loadPulse 1s ease-in-out infinite alternate;
     }
-    @keyframes pulse { from { transform: scaleX(0.3); } to { transform: scaleX(1); } }
-
-    .dynamic-island {
-      position: absolute;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 95px;
-      height: 28px;
-      background: #000;
-      border-radius: 14px;
-      z-index: 100;
-      pointer-events: none;
+    @keyframes loadPulse {
+      from { transform: scaleX(0.25); }
+      to   { transform: scaleX(1); }
     }
-
-    .home-bar {
-      position: absolute;
-      bottom: 6px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 80px;
-      height: 4px;
-      background: rgba(255,255,255,0.28);
-      border-radius: 2px;
-      z-index: 100;
-      pointer-events: none;
-    }
-
-    .btn-vol-up, .btn-vol-down, .btn-power {
-      position: absolute;
-      background: #2e2e2e;
-      border-radius: 2px;
-    }
-    .btn-vol-up   { left: -3px; top: 120px; width: 3px; height: 28px; }
-    .btn-vol-down { left: -3px; top: 160px; width: 3px; height: 28px; }
-    .btn-power    { right: -3px; top: 136px; width: 3px; height: 50px; }
 
     /* ── Info panel ───────────────────────────────────────────────────── */
     .info-panel {
-      max-width: 300px;
+      max-width: 310px;
       color: #fff;
     }
     .info-panel h1 {
-      font-size: 25px;
-      font-weight: 700;
-      margin-bottom: 8px;
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 6px;
+      letter-spacing: -0.5px;
     }
+    .info-panel h1 span { color: #DC4C3E; }
     .tagline {
-      color: #888;
+      color: #555;
       font-size: 13px;
-      line-height: 1.65;
-      margin-bottom: 22px;
+      line-height: 1.7;
+      margin-bottom: 26px;
     }
     .feature {
       display: flex;
       align-items: flex-start;
-      gap: 11px;
-      margin-bottom: 14px;
+      gap: 12px;
+      margin-bottom: 16px;
     }
-    .feature-icon { font-size: 17px; flex-shrink: 0; margin-top: 2px; }
-    .feature-text strong { display: block; font-size: 13px; font-weight: 600; margin-bottom: 2px; }
-    .feature-text span   { font-size: 12px; color: #666; line-height: 1.5; }
+    .feature-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+      width: 28px;
+      text-align: center;
+      margin-top: 1px;
+    }
+    .feature-text strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #eee;
+      margin-bottom: 2px;
+    }
+    .feature-text span {
+      font-size: 12px;
+      color: #555;
+      line-height: 1.55;
+    }
 
-    .badges { display: flex; gap: 7px; margin-top: 26px; flex-wrap: wrap; }
+    .divider { width: 100%; height: 1px; background: #1e1e1e; margin: 20px 0; }
+
+    .badges { display: flex; gap: 7px; flex-wrap: wrap; }
     .badge {
-      padding: 5px 11px;
+      padding: 5px 12px;
       border-radius: 20px;
       font-size: 11px;
       font-weight: 600;
-      background: #1e1e1e;
-      border: 1px solid #333;
-      color: #aaa;
+      background: #161616;
+      border: 1px solid #2a2a2a;
+      color: #666;
     }
-    .badge.blue { border-color: #4073FF55; color: #5585ff; background: #4073FF0f; }
+    .badge.red  { border-color: rgba(220,76,62,0.35); color: #DC4C3E; background: rgba(220,76,62,0.06); }
+    .badge.blue { border-color: rgba(64,115,255,0.35); color: #5585ff; background: rgba(64,115,255,0.06); }
 
     /* ── Real mobile: full screen, no shell ──────────────────────────── */
     @media (max-width: 700px) {
       html, body { background: #000; overflow: auto; }
-      .scene { transform: none; gap: 0; align-items: flex-start; }
-      .phone-shell { width: 100vw; height: 100dvh; border-radius: 0; box-shadow: none; }
+      .scene { gap: 0; align-items: flex-start; justify-content: flex-start; }
+      .phone-shell { width: 100vw; height: 100dvh; border-radius: 0; box-shadow: none; background: transparent; }
       .phone-screen { inset: 0; border-radius: 0; }
       #flutter-target { border-radius: 0; }
       #splash { border-radius: 0; }
-      .dynamic-island, .home-bar,
       .btn-vol-up, .btn-vol-down, .btn-power { display: none; }
       .info-panel { display: none; }
     }
@@ -178,6 +173,7 @@
 <body>
   <div class="scene">
 
+    <!-- iPhone shell: wider, no dynamic island, no home bar -->
     <div class="phone-shell">
       <div class="btn-vol-up"></div>
       <div class="btn-vol-down"></div>
@@ -187,61 +183,70 @@
         <!-- Flutter app mounts here -->
         <div id="flutter-target"></div>
 
-        <!-- Splash shown while Flutter boots, fades out automatically -->
+        <!-- Splash shown while Flutter boots, hidden once app renders -->
         <div id="splash">
-          <div id="splash-icon">&#10003;</div>
+          <div id="splash-icon">✓</div>
           <div id="splash-label">TodoList</div>
           <div id="splash-bar"></div>
         </div>
-
-        <div class="dynamic-island"></div>
-        <div class="home-bar"></div>
       </div>
     </div>
 
+    <!-- Info panel visible on desktop alongside the phone -->
     <div class="info-panel">
-      <h1>TodoList &#10003;</h1>
-      <p class="tagline">An AI-powered task manager built with Flutter &amp; Groq &mdash; supports Arabic and English, natural language input, and smart search.</p>
+      <h1>TodoList<span> ✓</span></h1>
+      <p class="tagline">An AI-powered offline-first task manager built with Flutter &amp; Groq — natural language input, smart search, and subtask suggestions in Arabic and English.</p>
 
       <div class="feature">
-        <div class="feature-icon">&#129504;</div>
+        <div class="feature-icon">🧠</div>
         <div class="feature-text">
           <strong>Groq AI Parsing</strong>
-          <span>Type tasks naturally in Arabic or English &mdash; AI extracts date, priority, project &amp; labels.</span>
+          <span>Type tasks naturally — AI extracts date, priority, project &amp; labels automatically.</span>
         </div>
       </div>
       <div class="feature">
-        <div class="feature-icon">&#128269;</div>
+        <div class="feature-icon">🔍</div>
         <div class="feature-text">
           <strong>AI-Powered Search</strong>
-          <span>Ask "overdue work tasks this week" and get smart filtered results.</span>
+          <span>Ask "overdue work tasks this week" and get smart filtered results instantly.</span>
         </div>
       </div>
       <div class="feature">
-        <div class="feature-icon">&#10024;</div>
+        <div class="feature-icon">✨</div>
         <div class="feature-text">
           <strong>Subtask Suggestions</strong>
-          <span>Groq breaks any task into actionable sub-steps for you to accept or reject.</span>
+          <span>Groq breaks any task into actionable sub-steps to accept or reject.</span>
         </div>
       </div>
       <div class="feature">
-        <div class="feature-icon">&#128296;</div>
+        <div class="feature-icon">🔧</div>
         <div class="feature-text">
           <strong>AI Maintenance</strong>
-          <span>Smart suggestions for duplicate projects, stale tasks, and cleanup opportunities.</span>
+          <span>Detects duplicate projects, stale tasks, and suggests smart cleanup actions.</span>
         </div>
       </div>
 
+      <div class="divider"></div>
+
       <div class="badges">
-        <span class="badge blue">Flutter</span>
+        <span class="badge red">Flutter</span>
         <span class="badge blue">Groq LLaMA 3.3</span>
         <span class="badge">Arabic + English</span>
+        <span class="badge">SQLite</span>
+        <span class="badge">Offline-first</span>
         <span class="badge">Open Source</span>
       </div>
     </div>
 
   </div>
 
+  <script>
+    // Called by Flutter once the first frame is rendered — hides the splash
+    window._flutterAppReady = function () {
+      var s = document.getElementById('splash');
+      if (s) s.classList.add('hidden');
+    };
+  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

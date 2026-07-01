@@ -234,7 +234,7 @@ class LabelTasksScreen extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.label_outline, size: 64, color: color.withOpacity(0.5)),
+                      Icon(Icons.label_outline, size: 64, color: color.withValues(alpha: 0.5)),
                       const SizedBox(height: kSpace16),
                       Text('No tasks with "${label.name}"',
                           style: Theme.of(context).textTheme.titleMedium),

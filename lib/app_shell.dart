@@ -333,7 +333,7 @@ class _DrawerItem extends StatelessWidget {
         width: 28,
         height: 28,
         decoration: BoxDecoration(
-          color: (emojiColor ?? kTextMuted).withOpacity(0.12),
+          color: (emojiColor ?? kTextMuted).withValues(alpha: 0.12),
           shape: BoxShape.circle,
         ),
         child: Center(child: Text(emoji!, style: const TextStyle(fontSize: 14))),
@@ -351,7 +351,7 @@ class _DrawerItem extends StatelessWidget {
           ? Container(
               padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
               decoration: BoxDecoration(
-                color: (badgeColor ?? kTextMuted).withOpacity(0.15),
+                color: (badgeColor ?? kTextMuted).withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(badge!,

@@ -97,9 +97,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   margin: const EdgeInsets.only(bottom: kSpace16),
                   padding: const EdgeInsets.all(kSpace16),
                   decoration: BoxDecoration(
-                    color: kP1Red.withOpacity(0.08),
+                    color: kP1Red.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: kP1Red.withOpacity(0.3)),
+                    border: Border.all(color: kP1Red.withValues(alpha: 0.3)),
                   ),
                   child: Text(_error!, style: const TextStyle(fontSize: 12, height: 1.4)),
                 ),

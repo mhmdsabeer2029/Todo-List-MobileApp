@@ -79,7 +79,7 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
                   width: 72,
                   height: 72,
                   decoration: BoxDecoration(
-                    color: _hexColor(_selectedColor).withOpacity(0.15),
+                    color: _hexColor(_selectedColor).withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
                   child: Center(
@@ -124,7 +124,7 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
                 height: 44,
                 decoration: BoxDecoration(
                   color: _selectedEmoji == e
-                      ? _hexColor(_selectedColor).withOpacity(0.2)
+                      ? _hexColor(_selectedColor).withValues(alpha: 0.2)
                       : Colors.transparent,
                   border: Border.all(
                     color: _selectedEmoji == e ? _hexColor(_selectedColor) : Colors.transparent,
@@ -159,7 +159,7 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
                     width: 2.5,
                   ),
                   boxShadow: _selectedColor == c
-                      ? [BoxShadow(color: _hexColor(c).withOpacity(0.5), blurRadius: 6)]
+                      ? [BoxShadow(color: _hexColor(c).withValues(alpha: 0.5), blurRadius: 6)]
                       : null,
                 ),
                 child: _selectedColor == c

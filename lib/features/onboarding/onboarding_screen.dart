@@ -93,7 +93,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       width: _page == i ? 24 : 8,
                       height: 8,
                       decoration: BoxDecoration(
-                        color: _page == i ? kPrimary : kTextMuted.withOpacity(0.3),
+                        color: _page == i ? kPrimary : kTextMuted.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(4),
                       ),
                     )),
@@ -152,7 +152,7 @@ class _OnboardingPage extends StatelessWidget {
             width: 100,
             height: 100,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.12),
+              color: color.withValues(alpha: 0.12),
               shape: BoxShape.circle,
             ),
             child: Center(
@@ -234,9 +234,9 @@ class _DemoChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
